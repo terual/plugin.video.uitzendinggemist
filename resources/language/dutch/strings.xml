@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<strings>
+    <!-- Main menu -->
+    <string id="30001">Zoeken...</string>
+    <string id="30002">Afgelopen 7 dagen</string>
+    <string id="30003">Omroepen</string>
+    <string id="30004">Regionaal</string>
+    <string id="30005">Genres</string>
+    <string id="30006">Programma's A-Z</string>
+    <string id="30007">Top 50</string>
+    
+    <!-- Plugin settings strings -->
+    <string id="30101">Geavanceerd</string>
+    <string id="30102">Video kwaliteit</string>
+    <string id="30103">Beste (1000 kb/s)</string>
+    <string id="30104">Gemiddeld (500 kb/s)</string>
+    <string id="30105">Laag (200 kb/s)</string>
+    <string id="30106">Debuggen</string>
+    
+    <!-- Dialog -->
+    <string id="30201">Uitzending Gemist</string>
+    <string id="30202">Geen afspeelbaar formaat gevonden.</string>
+    
+    <!-- Periods -->
+    <string id="30301">Vandaag</string>
+    <string id="30302">Gisteren</string>
+    <string id="30303">Deze week</string>
+    <string id="30304">Deze maand</string>
+    <string id="30305">Alles</string>
+
+    <!-- Search -->
+    <string id="30401">Zoek een programma</string>
+    
+</strings>
