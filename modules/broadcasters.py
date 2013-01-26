@@ -19,28 +19,33 @@
 # *
 # */
 
-import xbmcplugin
-import xbmcgui
 import urllib
 import re
 import sys
 import utils
 
+xbmcplugin = sys.modules["__main__"].xbmcplugin
+xbmcgui    = sys.modules["__main__"].xbmcgui
+common     = sys.modules["__main__"].common
 
 def createBroadcasterList(params):
+  common.log("", 5)
   module = params['module']
   baseurl = 'http://www.uitzendinggemist.nl'
   page = ""
   url = baseurl+'/omroepen/landelijk'
-  page = utils.open_url(url)
-  page = page.replace("\n","").replace("\t","")
-  broadcasters = re.findall(r"<li.*?class=\"broadcaster knav\".*?<a.*?href=\"(.*?)\".*?class=\"broadcaster\".*?title=\"(.*?)\">.*?src=\"(.*?)\".*?</a>", page)
-  for broadcaster in broadcasters:
-    title = utils.htmlentitydecode(broadcaster[1].strip())
-    url = broadcaster[0].strip()
-    url = sys.argv[0]+"?module="+module+"&action=find_programs"+"&url=" + url
-    thumb = "http:"+broadcaster[2].strip()
-    utils.addDir(title, url, thumb) 
+  request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+  if request["status"] == 200:
+    page = request["content"]
+    page = page.replace("\n","").replace("\t","")
+    broadcasters = re.findall(r"<li.*?class=\"broadcaster knav\".*?<a.*?href=\"(.*?)\".*?class=\"broadcaster\".*?title=\"(.*?)\">.*?src=\"(.*?)\".*?</a>", page)
+    for broadcaster in broadcasters:
+      title = common.replaceHTMLCodes(broadcaster[1].strip())
+      url = broadcaster[0].strip()
+      url = sys.argv[0]+"?module="+module+"&action=find_programs"+"&url=" + url
+      thumb = "http:"+broadcaster[2].strip()
+      utils.addDir(title, url, thumb)
+  common.log("EOD", 5)
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def find_programs(params):
@@ -51,16 +56,18 @@ def find_programs(params):
   pagecount = 1
   while pagecount<15:
     url = baseurl + url + "?display_mode=list&order=name_asc&page=" + str(pagecount)
-    page = utils.open_url(url)
-    programs = re.findall(r"<h2><a.*?href=\"(.*?)\".*?class=\"series knav_link\".*?title=\"(.*?)\">.*?</a>.*?</h2>", page)
-    if len(programs)==0:
-      break
-    for program in programs:
-      title = utils.htmlentitydecode(program[1])
-      programurl = program[0]
-      programurl = sys.argv[0]+"?module="+module+"&action=find_episodes"+"&url=" + programurl
-      thumb = ""
-      utils.addDir(title, programurl, thumb)
+    request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+    if request["status"] == 200:
+      page = request["content"]
+      programs = re.findall(r"<h2><a.*?href=\"(.*?)\".*?class=\"series knav_link\".*?title=\"(.*?)\">.*?</a>.*?</h2>", page)
+      if len(programs)==0:
+        break
+      for program in programs:
+        title = common.replaceHTMLCodes(program[1])
+        programurl = program[0]
+        programurl = sys.argv[0]+"?module="+module+"&action=find_episodes"+"&url=" + programurl
+        thumb = ""
+        utils.addDir(title, programurl, thumb)
     pagecount = pagecount+1
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
@@ -73,25 +80,27 @@ def find_episodes(params):
   pagecount = 1
   while pagecount<10:
     rssurl = baseurl + url + '.rss?page=' + str(pagecount)
-    page = utils.open_url(rssurl)    
-    try:
-      dom = xml.dom.minidom.parseString(page)
-    except:
-      page = page.replace("&","&amp;")
-      dom = xml.dom.minidom.parseString(page)
-    if len(dom.getElementsByTagName('item'))==0:
-      break
-    else:
-      for item in dom.getElementsByTagName('item'):
-        videourl = utils.getText(item.getElementsByTagName('link')[0].childNodes)
-        videourl = urllib.quote_plus(videourl)
-        videourl = sys.argv[0]+"?module="+module+"&action=find_video"+"&url="+videourl
-        try:
-          thumb = item.getElementsByTagName('media:thumbnail')[0].attributes['url'].value
-        except:
-          thumb = ""
-        title = utils.htmlentitydecode(utils.getText(item.getElementsByTagName('title')[0].childNodes))
-        utils.addLink(title, videourl, thumb)
+    request = common.fetchPage({"link": rssurl, "cookie": "site_cookie_consent=yes"})
+    if request["status"] == 200:
+      page = request["content"]
+      try:
+        dom = xml.dom.minidom.parseString(page)
+      except:
+        page = page.replace("&","&amp;")
+        dom = xml.dom.minidom.parseString(page)
+      if len(dom.getElementsByTagName('item'))==0:
+        break
+      else:
+        for item in dom.getElementsByTagName('item'):
+          videourl = utils.getText(item.getElementsByTagName('link')[0].childNodes)
+          videourl = urllib.quote_plus(videourl)
+          videourl = sys.argv[0]+"?module="+module+"&action=find_video"+"&url="+videourl
+          try:
+            thumb = item.getElementsByTagName('media:thumbnail')[0].attributes['url'].value
+          except:
+            thumb = ""
+          title = common.replaceHTMLCodes(utils.getText(item.getElementsByTagName('title')[0].childNodes))
+          utils.addLink(title, videourl, thumb)
     pagecount = pagecount+1
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

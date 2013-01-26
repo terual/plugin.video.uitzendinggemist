@@ -19,13 +19,14 @@
 # *
 # */
 
-import xbmcplugin
-import xbmcgui
 import urllib
 import re
 import sys
 import utils
 
+xbmcplugin = sys.modules["__main__"].xbmcplugin
+xbmcgui    = sys.modules["__main__"].xbmcgui
+common     = sys.modules["__main__"].common
 
 def createDayList(params):
   import datetime
@@ -58,32 +59,36 @@ def find_episodes(params):
   dow = days[int(params['dow'])]
   page = ""
   url = baseurl + "/gids/" + date
-  page = utils.open_url(url)
-  episodes = re.findall(r"<li.*?class=\"episode active\".*?data-path=\"(.*?)\".*?>", page)
-  episodelist = []
-  unique=[]
-  for episode in episodes:
-    episodeinfourl = baseurl + episode
-    episodeinfo = utils.open_url(episodeinfourl)
-    episodeinfo=episodeinfo.replace("\n","")
-    info1 = re.findall(r"<h2.*?href=\"(.*?)\".*?class=\"episode active \".*?title=\"(.*?)\".*?h2>", episodeinfo)
-    info2 = re.findall(r"<tr>.*?<th>datum</th>.*?<td>(.*?)</td>.*?</tr>", episodeinfo)
-    try:
-      date = info2[0]
-      title = utils.htmlentitydecode(info1[0][1])
-      date = date.replace(title,"").replace("(","").replace(")","") 
-      videourl = info1[0][0]
-      videourl = sys.argv[0]+"?module="+module+"&action=find_video"+"&url=" + baseurl+videourl
-      thumb = ""
-      if not info1[0][0] in unique:
-        if dow in date:
-          episodelist.append([date,title,videourl,thumb])
-          unique.append(info1[0][0])
-    except:
-      pass
-  episodelist.sort(reverse=True)
-  for episode in episodelist:
-    utils.addLink("%s, %s" % (episode[0],episode[1]), episode[2], episode[3])
+  request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+  if request["status"] == 200:
+    page = request["content"]
+    episodes = re.findall(r"<li.*?class=\"episode active\".*?data-path=\"(.*?)\".*?>", page)
+    episodelist = []
+    unique=[]
+    for episode in episodes:
+      episodeinfourl = baseurl + episode
+      request = common.fetchPage({"link": episodeinfourl, "cookie": "site_cookie_consent=yes"})
+      if request["status"] == 200:
+        episodeinfo = request["content"]
+        episodeinfo=episodeinfo.replace("\n","")
+        info1 = re.findall(r"<h2.*?href=\"(.*?)\".*?class=\"episode active \".*?title=\"(.*?)\".*?h2>", episodeinfo)
+        info2 = re.findall(r"<tr>.*?<th>datum</th>.*?<td>(.*?)</td>.*?</tr>", episodeinfo)
+        try:
+          date = info2[0]
+          title = common.replaceHTMLCodes(info1[0][1])
+          date = date.replace(title,"").replace("(","").replace(")","") 
+          videourl = info1[0][0]
+          videourl = sys.argv[0]+"?module="+module+"&action=find_video"+"&url=" + baseurl+videourl
+          thumb = ""
+          if not info1[0][0] in unique:
+            if dow in date:
+              episodelist.append([date,title,videourl,thumb])
+              unique.append(info1[0][0])
+        except:
+          pass
+    episodelist.sort(reverse=True)
+    for episode in episodelist:
+      utils.addLink("%s, %s" % (episode[0],episode[1]), episode[2], episode[3])
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 

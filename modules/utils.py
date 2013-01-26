@@ -19,8 +19,12 @@
 # *
 # */
 
-def log(string):
-  print "uitzendinggemist : " + str(string)
+import sys
+common     = sys.modules["__main__"].common
+
+streamquality = { 0: "std",
+                  1: "bb",
+                  2: "sb" }
 
 def getText(nodelist):
     rc = []
@@ -44,58 +48,59 @@ def addDir(title, url,thumb):
   liz = xbmcgui.ListItem(title, thumbnailImage=thumb)
   xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz, isFolder=True)
 
-def open_url(url):
-  import urllib
-  import urllib2
-  import time
-  count = 1
-  retrys = 5
-  while True:
-    try:
-      page = urllib2.urlopen(url)
-      return page.read()
-      break
-    except:
-      time.sleep(1)
-      if count==retrys:
-        return "<none />"
-        break
-      count = count + 1
-  
-def htmlentitydecode(s):
-  import re
-  from htmlentitydefs import name2codepoint
-  return re.sub('&(%s);' % '|'.join(name2codepoint), lambda m: unichr(name2codepoint[m.group(1)]), s)
-
-def find_video(url):
-  import xml.dom.minidom
-  import re
+def get_security_code():
   import base64
-  import hashlib
-  try:
-    page = open_url(url)
-    episode_id = re.findall(r'.*?episodeID=(.*?)&.*?',page)[0]
-    url = "http://pi.omroep.nl/info/security/"
-    page = open_url(url)
+  import xml.dom.minidom
+  common.log("", 5)
+  url = "http://pi.omroep.nl/info/security/"
+  request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+  if request["status"] == 200:
+    page = request["content"]
     dom = xml.dom.minidom.parseString(page)
     key = getText(dom.getElementsByTagName('key')[0].childNodes)
     key = base64.b64decode(key)
     key = key.split("|")
-    md5hash = "%s|%s" % (episode_id,key[1])
+    return key[1]
+  return None
+
+def find_video(url):
+  common.log("", 5)
+  import xml.dom.minidom
+  import re
+  import hashlib
+  try:
+    request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+    if not request["status"] == 200:
+      common.log("Error getting episode page", 3)
+      return None
+    page = request["content"]
+    episode_id = re.findall(r'.*?episodeID=(.*?)&.*?',page)[0]
+    
+    security_code = get_security_code()
+    if not security_code:
+      common.log("Error getting security code", 3)
+      return None
+    md5hash = "%s|%s" % (episode_id,security_code)
     md5hash = hashlib.md5(md5hash.upper()).hexdigest().upper()
+    
     url = "http://pi.omroep.nl/info/stream/aflevering/%s/%s" % (episode_id,md5hash)
-    page = open_url(url)
+    request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+    if not request["status"] == 200:
+      common.log("Error getting stream infomartion", 3)
+      return None
+    page = request["content"]
     dom = xml.dom.minidom.parseString(page)
     streamurl = {}
     for stream in dom.getElementsByTagName('stream'):
-      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value=="bb"):
-        streamurl[1]=getText(stream.getElementsByTagName('streamurl')[0].childNodes).strip()
-      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value=="std"):
+      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value==streamquality[0]):
         streamurl[0]=getText(stream.getElementsByTagName('streamurl')[0].childNodes).strip()
-      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value=="sb"):
+      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value==streamquality[1]):
+        streamurl[1]=getText(stream.getElementsByTagName('streamurl')[0].childNodes).strip()
+      if (stream.attributes['compressie_formaat'].value=="mov" and stream.attributes['compressie_kwaliteit'].value==streamquality[2]):
         streamurl[2]=getText(stream.getElementsByTagName('streamurl')[0].childNodes).strip()
     for key in [0,1,2]:
       if streamurl.has_key(key):
+        common.log("Found stream quality %s" % streamquality[key])
         return streamurl[key]
         break
   except:

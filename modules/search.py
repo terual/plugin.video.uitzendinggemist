@@ -19,13 +19,15 @@
 # *
 # */
 
-import xbmcplugin
-import xbmcgui
-import xbmc
 import urllib
 import re
 import sys
 import utils
+
+xbmc       = sys.modules["__main__"].xbmc
+xbmcplugin = sys.modules["__main__"].xbmcplugin
+xbmcgui    = sys.modules["__main__"].xbmcgui
+common     = sys.modules["__main__"].common
 
 def search(params):
   import cgi
@@ -43,13 +45,16 @@ def search(params):
   pagecount = 1
   while pagecount<15:
     url = baseurl+'/zoek/programmas?q=' + urllib.quote(search) + '&series_page=' + str(pagecount) + '&_pjax=true'
-    page = utils.open_url(url)
+    request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
+    if not request["status"] == 200:
+      break
+    page = request["content"]
     if len(page)<10:
       break
     page = page.replace("\n","").replace("\t","")
     programs = re.findall(r"<div.*?class=\"img\".*?href=\"(.*?)\".*?title=\"(.*?)\".*?data-images=\"(.*?)\".*?class=\"episodes-count\">(.*?)</div>.*?</div>", page)
     for program in programs:
-      title = utils.htmlentitydecode(program[1].strip())
+      title = common.replaceHTMLCodes(program[1].strip())
       url = program[0].strip()
       url = sys.argv[0]+"?module="+module+"&action=find_episodes"+"&url=" + url
       thumb = program[2].strip().replace("&quot;","").replace("[","").replace("]","").replace("140x79.jpg","280x160.jpg")
@@ -71,7 +76,10 @@ def find_episodes(params):
   pagecount = 1
   while pagecount<10:
     rssurl = baseurl + url + '.rss?page=' + str(pagecount)
-    page = utils.open_url(rssurl)    
+    request = common.fetchPage({"link": rssurl, "cookie": "site_cookie_consent=yes"})
+    if not request["status"] == 200:
+      break
+    page = request["content"]  
     try:
       dom = xml.dom.minidom.parseString(page)
     except:
@@ -88,7 +96,7 @@ def find_episodes(params):
           thumb = item.getElementsByTagName('media:thumbnail')[0].attributes['url'].value
         except:
           thumb = ""
-        title = utils.htmlentitydecode(utils.getText(item.getElementsByTagName('title')[0].childNodes))
+        title = common.replaceHTMLCodes(utils.getText(item.getElementsByTagName('title')[0].childNodes))
         utils.addLink(title, videourl, thumb)
     pagecount = pagecount+1
   xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -1,5 +1,6 @@
 #/*
 # *      Copyright (C) 2012 Syl
+# *      Copyright (C) 2013 terual
 # *
 # *
 # *  This Program is free software; you can redistribute it and/or modify
@@ -20,43 +21,48 @@
 # */
 
 import xbmcplugin
+import xbmcaddon
 import xbmcgui
 import sys
 
-def get_params():
-        param={}
-        paramstring=sys.argv[2]
-        if len(paramstring)>=2:
-                params=sys.argv[2]
-                cleanedparams=params.replace('?','')
-                if (params[len(params)-1]=='/'):
-                        params=params[0:len(params)-2]
-                pairsofparams=cleanedparams.split('&')
-                for i in range(len(pairsofparams)):
-                        splitparams={}
-                        splitparams=pairsofparams[i].split('=')
-                        if (len(splitparams))==2:
-                                param[splitparams[0]]=splitparams[1]
+# plugin constants
+version = "1.2.0"
+plugin = "UitzendingGemist-" + version
 
-        return param
+# xbmc hooks
+settings = xbmcaddon.Addon(id='plugin.video.uitzendinggemist')
+language = settings.getLocalizedString
+dbg = settings.getSetting("debug") == "true"
+dbglevel = 5
 
 def addDir(name, module):
         u=sys.argv[0]+"?module="+module
         liz=xbmcgui.ListItem(name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 
-params=get_params() # First, get the parameters
+if (__name__ == "__main__" ):
+  if dbg:
+    print plugin + " ARGV: " + repr(sys.argv)
+  else:
+    print plugin
 
-if 'module' in params: # Module chosen, load and execute module
-  module = 'modules.'+params['module']
-  __import__(module)
-  current_module = sys.modules[module]
-  current_module.run(params)
-else: # No module chosen, list modules
-  addDir('Zoeken...', 'search')
-  addDir('Afgelopen 7 dagen', 'new')
-  addDir('Omroepen', 'broadcasters')
-  addDir('Regionaal', 'regional')
-  addDir('Genres', 'genres')
-  # Add extra modules here, using addDir(name, module)
-  xbmcplugin.endOfDirectory(int(sys.argv[1]))
+  import CommonFunctions as common
+  common.plugin = plugin
+  common.dbg = dbg
+  common.dbglevel = dbglevel
+
+  params = common.getParameters(sys.argv[2])
+
+  if 'module' in params: # Module chosen, load and execute module
+    module = 'modules.'+params['module']
+    __import__(module)
+    current_module = sys.modules[module]
+    current_module.run(params)
+  else: # No module chosen, list modules
+    addDir('Zoeken...', 'search')
+    addDir('Afgelopen 7 dagen', 'new')
+    addDir('Omroepen', 'broadcasters')
+    addDir('Regionaal', 'regional')
+    addDir('Genres', 'genres')
+    # Add extra modules here, using addDir(name, module)
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
