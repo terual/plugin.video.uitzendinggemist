@@ -1,0 +1,14 @@
+[B]1.0.0:[/B]
+Initial version
+ - search database
+ - list series
+ - list episodes
+ - find best video stream
+[B]1.1.0:[/B]
+ - Added program listing for last 7 days
+[B]1.1.1:[/B]
+ - Created utils.py for shared functions
+[B]1.2.0:[/B]
+ - Added regional braodcasters
+ - Added national braodcasters
+ - Added genres

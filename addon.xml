@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.uitzendinggemist"
+       name="Uitzending Gemist"
+       version="1.2.0"
+       provider-name="Syl">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Watch videos from uitzendinggemist.nl</summary>
+    <summary lang="nl">Bekijk videos van de uitzendinggemist.nl</summary>
+    <description lang="en">Watch videos from uitzendinggemist.nl.</description>
+    <description lang="nl">Bekijk videos van uitzendinggemist.nl.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
