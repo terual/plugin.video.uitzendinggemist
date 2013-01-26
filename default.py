@@ -59,12 +59,14 @@ if (__name__ == "__main__" ):
     current_module = sys.modules[module]
     current_module.run(params)
   else: # No module chosen, list modules
-    addDir('Zoeken...', 'search')
-    addDir('Afgelopen 7 dagen', 'new')
-    addDir('Omroepen', 'broadcasters')
-    addDir('Regionaal', 'regional')
-    addDir('Genres', 'genres')
-    addDir('Programma\'s A-Z', 'programs')
-    addDir('Top 50', 'top50')
+    addDir(language(30001), 'search')
+    addDir(language(30002), 'new')
+    addDir(language(30003), 'broadcasters')
+    addDir(language(30004), 'regional')
+    addDir(language(30005), 'genres')
+    addDir(language(30006), 'programs')
+    addDir(language(30007), 'top50')
     # Add extra modules here, using addDir(name, module)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+

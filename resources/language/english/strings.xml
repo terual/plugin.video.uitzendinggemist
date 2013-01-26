@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
 <strings>
+    <!-- Main menu -->
+    <string id="30001">Search...</string>
+    <string id="30002">Last 7 days</string>
+    <string id="30003">Broadcaster</string>
+    <string id="30004">Regional</string>
+    <string id="30005">Genres</string>
+    <string id="30006">Programmes A-Z</string>
+    <string id="30007">Top 50</string>
+    
     <!-- Plugin settings strings -->
-    <string id="30001">Advanced</string>
-    <string id="30002">Video quality</string>
-    <string id="30003">Best (1000 kb/s)</string>
-    <string id="30004">Medium (500 kb/s)</string>
-    <string id="30005">Low (200 kb/s)</string>
-    <string id="30006">Debug</string>
+    <string id="30101">Advanced</string>
+    <string id="30102">Video quality</string>
+    <string id="30103">Best (1000 kb/s)</string>
+    <string id="30104">Medium (500 kb/s)</string>
+    <string id="30105">Low (200 kb/s)</string>
+    <string id="30106">Debug</string>
 
+    <!-- Dialog -->
+    <string id="30201">Uitzending Gemist</string>
+    <string id="30202">No playable format found.</string>
+    
+    <!-- Periods -->
+    <string id="30301">Today</string>
+    <string id="30302">Yesterday</string>
+    <string id="30303">This week</string>
+    <string id="30304">This month</string>
+    <string id="30305">All time</string>
+    
+    <!-- Search -->
+    <string id="30401">Search a programme</string>
+    
 </strings>

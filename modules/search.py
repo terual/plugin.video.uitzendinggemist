@@ -28,13 +28,14 @@ xbmc       = sys.modules["__main__"].xbmc
 xbmcplugin = sys.modules["__main__"].xbmcplugin
 xbmcgui    = sys.modules["__main__"].xbmcgui
 common     = sys.modules["__main__"].common
+language   = sys.modules["__main__"].language
 
 def search(params):
   import cgi
   baseurl = 'http://www.uitzendinggemist.nl'
   module = params['module']
   # open dialog to get search string
-  kb = xbmc.Keyboard('', 'Zoek een programma', False)
+  kb = xbmc.Keyboard('', language(30401), False)
   kb.doModal()
   if (kb.isConfirmed()):
     search = kb.getText()
@@ -111,7 +112,7 @@ def play(params):
     return True
   else:
     dialog = xbmcgui.Dialog()
-    ok = dialog.ok('Uitzending Gemist', 'Geen afspeelbaar formaat gevonden.')
+    ok = dialog.ok(language(30201), language(30202))
     return False
 
 def run(params):

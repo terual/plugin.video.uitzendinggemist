@@ -27,11 +27,12 @@ import utils
 xbmcplugin = sys.modules["__main__"].xbmcplugin
 xbmcgui    = sys.modules["__main__"].xbmcgui
 common     = sys.modules["__main__"].common
+language   = sys.modules["__main__"].language
 
 def createPeriodsList(params):
   module = params['module']
   periods = ['vandaag', 'gisteren', 'week', 'maand', 'alles']
-  periodName = ['Vandaag', 'Gisteren', 'Deze week', 'Deze maand', 'Alles']
+  periodName = [language(30301), language(30302), language(30303), language(30304), language(30305)]
   for i in range(len(periods)): #XXX
     title = periodName[i]
     url = sys.argv[0]+"?module="+module+"&action=find_episodes"+"&period=" + periods[i]
@@ -73,7 +74,7 @@ def play(params):
     return True
   else:
     dialog = xbmcgui.Dialog()
-    ok = dialog.ok('Uitzending Gemist', 'Geen afspeelbaar formaat gevonden.')
+    ok = dialog.ok(language(30201), language(30202))
     return False
 
 def run(params):

@@ -27,6 +27,7 @@ import utils
 xbmcplugin = sys.modules["__main__"].xbmcplugin
 xbmcgui    = sys.modules["__main__"].xbmcgui
 common     = sys.modules["__main__"].common
+language   = sys.modules["__main__"].language
 
 def createBroadcasterList(params):
   common.log("", 5)
@@ -115,7 +116,7 @@ def play(params):
     return True
   else:
     dialog = xbmcgui.Dialog()
-    ok = dialog.ok('Uitzending Gemist', 'Geen afspeelbaar formaat gevonden.')
+    ok = dialog.ok(language(30201), language(30202))
     return False
 
 def run(params):
