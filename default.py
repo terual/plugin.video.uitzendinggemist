@@ -65,5 +65,6 @@ if (__name__ == "__main__" ):
     addDir('Regionaal', 'regional')
     addDir('Genres', 'genres')
     addDir('Programma\'s A-Z', 'programs')
+    addDir('Top 50', 'top50')
     # Add extra modules here, using addDir(name, module)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
