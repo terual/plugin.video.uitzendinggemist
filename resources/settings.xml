@@ -2,7 +2,7 @@
 <settings>
   <!-- Advanced -->
   <category label="30101">
-    <setting id="video_quality" type="enum" label="30002" lvalues="30103|30104|30105" default="0" />
+    <setting id="video_quality" type="enum" label="30102" lvalues="30103|30104|30105" default="0" />
     <setting id="debug" type="bool" label="30106" default="false" />
   </category>
 </settings>
