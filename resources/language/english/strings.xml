@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<strings>
+    <!-- Plugin settings strings -->
+    <string id="30001">Advanced</string>
+    <string id="30002">Video quality</string>
+    <string id="30003">Best (1000 kb/s)</string>
+    <string id="30004">Medium (500 kb/s)</string>
+    <string id="30005">Low (200 kb/s)</string>
+    <string id="30006">Debug</string>
+
+</strings>

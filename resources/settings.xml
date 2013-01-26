@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <!-- Advanced -->
+  <category label="30001">
+    <setting id="video_quality" type="enum" label="30002" lvalues="30003|30004|30005" default="0" />
+    <setting id="debug" type="bool" label="30006" default="false" />
+  </category>
+</settings>
