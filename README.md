@@ -7,3 +7,5 @@ To use this, you need XBMC --> www.xbmc.org
 For more information about the uitzendinggemist --> http://www.uitzendinggemist.nl/
 
 For bugreports and feature requests, please file an Issue.
+
+Original website: http://www.nnet.nl/xbmc-plugin/
