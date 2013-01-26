@@ -33,6 +33,22 @@ def getText(nodelist):
             rc.append(node.data)
     return ''.join(rc)
 
+def parseDataImages(data, resized=False):
+  import re
+  import simplejson as json
+  try:
+    im = json.loads(common.replaceHTMLCodes(data))
+  except:
+    return ""
+  if len(im) > 0:
+    if resized==False:
+      mobj = re.search("http://mediadb.omroep.nl/assets/(\d*?)/(\d*?)/(\d*?)/(.*?).jpg", im[0])
+      if mobj:
+        return "http://mediadb.omroep.nl/assets/%s/%s/%s.jpg" % (mobj.group(1),mobj.group(2),mobj.group(3))
+    else:
+      return im[0]
+  return ""
+
 def addLink(title, url, thumb):
   import xbmcgui
   import xbmcplugin
