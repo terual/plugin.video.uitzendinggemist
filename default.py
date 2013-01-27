@@ -36,9 +36,9 @@ dbg = settings.getSetting("debug") == "true"
 dbglevel = 5
 
 def addDir(name, module):
-        u=sys.argv[0]+"?module="+module
-        liz=xbmcgui.ListItem(name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+  u=sys.argv[0]+"?module="+module
+  liz=xbmcgui.ListItem(name)
+  xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 
 if (__name__ == "__main__" ):
   if dbg:
@@ -66,6 +66,7 @@ if (__name__ == "__main__" ):
     addDir(language(30005), 'genres')
     addDir(language(30006), 'programs')
     addDir(language(30007), 'top50')
+    addDir(language(30008), 'kijktips')
     # Add extra modules here, using addDir(name, module)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

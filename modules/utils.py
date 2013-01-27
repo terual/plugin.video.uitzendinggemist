@@ -49,15 +49,17 @@ def parseDataImages(data, resized=False):
       return im[0]
   return ""
 
-def addLink(title, url, thumb):
+def addLink(title, url, thumb, info=None):
   import xbmcgui
   import xbmcplugin
   import sys
   liz = xbmcgui.ListItem(title, thumbnailImage=thumb)
   liz.setProperty("IsPlayable","true")
+  if info:
+    liz.setInfo(type="video", infoLabels=info)
   xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=liz, isFolder=False)
 
-def addDir(title, url,thumb):
+def addDir(title, url, thumb):
   import xbmcgui
   import xbmcplugin
   import sys

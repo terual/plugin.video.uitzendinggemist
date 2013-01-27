@@ -29,38 +29,25 @@ xbmcgui    = sys.modules["__main__"].xbmcgui
 common     = sys.modules["__main__"].common
 language   = sys.modules["__main__"].language
 
-def createPeriodsList(params):
+def createSuggestionsList(params):
   module = params['module']
-  periods = ['vandaag', 'gisteren', 'week', 'maand', 'alles']
-  periodName = [language(30301), language(30302), language(30303), language(30304), language(30305)]
-  for i in range(len(periods)): #XXX
-    title = periodName[i]
-    url = sys.argv[0]+"?module="+module+"&action=find_episodes"+"&period=" + periods[i]
-    thumb = ""
-    utils.addDir(title, url, thumb) 
-  xbmcplugin.endOfDirectory(int(sys.argv[1]))
-
-def find_episodes(params):
-  baseurl = 'http://www.uitzendinggemist.nl/top50/'
-  period = params['period']
-  module = params['module']
-  
-  url = baseurl + period
+  url = 'http://www.uitzendinggemist.nl/kijktips'
   request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
   if request["status"] == 200:
     page = request["content"].encode('utf-8')
-    page = common.parseDOM(page, 'tbody')
-    episodes = common.parseDOM(page, 'tr')
-    for i, episode in enumerate(episodes):
-      title = common.parseDOM(episode, 'h2')
-      subtitle = common.parseDOM(episode, 'h3')
-      title = "%i. %s, %s" % (i+1, common.parseDOM(subtitle, 'a', ret='title')[0], common.parseDOM(title, 'a', ret='title')[0])
-      videourl = "http://www.uitzendinggemist.nl%s" % common.parseDOM(episode, 'a', attrs = { 'class': 'episode active episode-image' }, ret = 'href')[0]
+    episodes = common.parseDOM(page, 'div', attrs = { 'class': 'kijktip' })
+    for episode in episodes:
+      title = common.parseDOM(episode, 'h3')
+      videourl = "http://www.uitzendinggemist.nl%s" % common.parseDOM(title, 'a', ret = 'href')[0]
+      title = common.parseDOM(title, 'a')[0]
+      subtitle = common.parseDOM(episode, 'h2')
+      subtitle = common.parseDOM(subtitle, 'a')[0]
+      plot = common.parseDOM(episode, 'p')[0]
+      title = "%s - %s" % (title, subtitle)
       videourl = urllib.quote_plus(videourl)
       videourl = sys.argv[0]+"?module="+module+"&action=find_video"+"&url="+videourl
       thumb = utils.parseDataImages(common.parseDOM(episode, 'img', attrs = { 'class': 'thumbnail' }, ret = 'data-images')[0])
-      utils.addLink(title, videourl, thumb)
-
+      utils.addLink(title, videourl, thumb, info={'plot': plot})
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def play(params):
@@ -80,7 +67,5 @@ def run(params):
   if 'action' in params:
     if params['action']=='find_video':
       play(params)
-    elif params['action']=='find_episodes':
-      find_episodes(params)
   else:
-    createPeriodsList(params)
+    createSuggestionsList(params)
