@@ -71,7 +71,7 @@ def get_security_code():
   url = "http://pi.omroep.nl/info/security/"
   request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
   if request["status"] == 200:
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     dom = xml.dom.minidom.parseString(page)
     key = getText(dom.getElementsByTagName('key')[0].childNodes)
     key = base64.b64decode(key)
@@ -89,7 +89,7 @@ def find_video(url):
     if not request["status"] == 200:
       common.log("Error getting episode page", 3)
       return None
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     episode_id = re.findall(r'.*?episodeID=(.*?)&.*?',page)[0]
     
     security_code = get_security_code()
@@ -104,7 +104,7 @@ def find_video(url):
     if not request["status"] == 200:
       common.log("Error getting stream infomartion", 3)
       return None
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     dom = xml.dom.minidom.parseString(page)
     streamurl = {}
     for stream in dom.getElementsByTagName('stream'):

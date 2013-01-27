@@ -48,7 +48,7 @@ def find_programs(params):
     url = baseurl + letter + "?display_mode=images&_pjax=true&page=" + str(pagecount)
     request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
     if request["status"] == 200:
-      page = request["content"]
+      page = request["content"].encode('utf-8')
       programs = re.findall(r"<a href=\"(.*?)\".*?class=\"series series-image\".*?title=\"(.*?)\">.*?data-images=\"(.*?)\".*?</a>", page)
       if len(programs)==0:
         break

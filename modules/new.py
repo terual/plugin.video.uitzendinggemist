@@ -62,7 +62,7 @@ def find_episodes(params):
   url = baseurl + "/gids/" + date
   request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
   if request["status"] == 200:
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     episodes = re.findall(r"<li.*?class=\"episode active\".*?data-path=\"(.*?)\".*?>", page)
     episodelist = []
     unique=[]
@@ -70,7 +70,7 @@ def find_episodes(params):
       episodeinfourl = baseurl + episode
       request = common.fetchPage({"link": episodeinfourl, "cookie": "site_cookie_consent=yes"})
       if request["status"] == 200:
-        episodeinfo = request["content"]
+        episodeinfo = request["content"].encode('utf-8')
         episodeinfo=episodeinfo.replace("\n","")
         info1 = re.findall(r"<h2.*?href=\"(.*?)\".*?class=\"episode active \".*?title=\"(.*?)\".*?h2>", episodeinfo)
         info2 = re.findall(r"<tr>.*?<th>datum</th>.*?<td>(.*?)</td>.*?</tr>", episodeinfo)

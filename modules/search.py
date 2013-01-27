@@ -49,7 +49,7 @@ def search(params):
     request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
     if not request["status"] == 200:
       break
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     if len(page)<10:
       break
     page = page.replace("\n","").replace("\t","")
@@ -80,7 +80,7 @@ def find_episodes(params):
     request = common.fetchPage({"link": rssurl, "cookie": "site_cookie_consent=yes"})
     if not request["status"] == 200:
       break
-    page = request["content"]  
+    page = request["content"].encode('utf-8')
     try:
       dom = xml.dom.minidom.parseString(page)
     except:

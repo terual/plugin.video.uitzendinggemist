@@ -36,7 +36,7 @@ def createGenreList(params):
   url = baseurl+'/genres'
   request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
   if request["status"] == 200:
-    page = request["content"]
+    page = request["content"].encode('utf-8')
     page = page.replace("\n","").replace("\t","")
     genres = re.findall(r"<li.*?class=\"genre knav\".*?<a.*?href=\"(.*?)\".*?class=\"genre\".*?title=\"(.*?)\">.*?src=\"(.*?)\".*?</a>", page)
     for genre in genres:
@@ -57,7 +57,7 @@ def find_programs(params):
     url = baseurl + url + "?display_mode=list&order=name_asc&page=" + str(pagecount)
     request = common.fetchPage({"link": url, "cookie": "site_cookie_consent=yes"})
     if request["status"] == 200:
-      page = request["content"]
+      page = request["content"].encode('utf-8')
       programs = re.findall(r"<h2><a.*?href=\"(.*?)\".*?class=\"series knav_link\".*?title=\"(.*?)\">.*?</a>.*?</h2>", page)
       if len(programs)==0:
         break
@@ -81,7 +81,7 @@ def find_episodes(params):
     rssurl = baseurl + url + '.rss?page=' + str(pagecount)
     request = common.fetchPage({"link": rssurl, "cookie": "site_cookie_consent=yes"})
     if request["status"] == 200:
-      page = request["content"]  
+      page = request["content"].encode('utf-8')
       try:
         dom = xml.dom.minidom.parseString(page)
       except:
